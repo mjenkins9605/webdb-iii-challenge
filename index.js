@@ -43,6 +43,24 @@ server.get("/api/cohorts", (req, res) => {
         });
       });
   });
+
+  server.get('/:id/students', (req, res) => {
+    const id = req.params.id;
+    db('cohorts')
+      .join('students', 'students.cohort_id', 'cohorts.id')
+      .select('students.id', 'students.name')
+      .where('cohorts.id', id)
+      .then(studentId => {
+        if (studentId) {
+          res.status(200).json(studentId);
+        } else {
+          res.status(404).json({ message: 'No students were found, please try again' });
+        }
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  })
   
   server.post("/api/cohorts", (req, res) => {
     db("cohorts")
